@@ -3,6 +3,9 @@ module
 public import Adian.FinPres
 public import Adian.NovikovBoone
 public import Adian.Rabin
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
 # The Adian–Rabin Theorem
@@ -14,8 +17,8 @@ finitely presented groups is algorithmically decidable.
 
 - `GroupProp`: an abstract property of groups (`∀ (G : Type) [Group G], Prop`).
 - `GroupProp.IsAbstract`: invariance under group isomorphism (`G ≃* H → (P G ↔ P H)`).
-- `IsMarkovProperty`: an abstract property satisfied by some finitely presented group `Π₁.Group`
-  and failing for every finitely presented group into which some finitely presented group `Π₂.Group`
+- `IsMarkovProperty`: an abstract property satisfied by some finitely presented group `F₁.Group`
+  and failing for every finitely presented group into which some finitely presented group `F₂.Group`
   embeds.
 - `adian_rabin_of_undecidable_word_problem`: reduces the word problem of any finite presentation
   `H` to deciding any Markov property `P` on `FinPres`.
@@ -26,6 +29,10 @@ finitely presented groups is algorithmically decidable.
   - `undecidable_abelian` (commutativity / abelianness)
   - `undecidable_torsionFree` (torsion-freeness)
   - `undecidable_free` (being a free group)
+  - `undecidable_cyclic` (being a cyclic group)
+  - `undecidable_solvable` (being a solvable group)
+  - `undecidable_nilpotent` (being a nilpotent group)
+  - `undecidable_decidableWordProblem` (having a decidable word problem)
 -/
 
 @[expose] public section
@@ -385,5 +392,155 @@ theorem undecidable_free :
     have h1 := freeGroup_eq_one_of_sq_eq_one _ hsq
     have h2 : f (zmod2Pres.ofGen (0 : Fin 1)) = 1 := e.injective (h1.trans (map_one e).symm)
     exact zmod2Pres_gen_ne_one (hf (h2.trans (map_one f).symm))
+
+/-- **Corollary 6**: Being a cyclic group is undecidable for finitely presented groups. -/
+theorem undecidable_cyclic :
+    ¬ ComputablePred (fun F : FinPres => IsCyclic F.Group) := by
+  refine adian_rabin (fun G _ => IsCyclic G) ⟨?_, ?_, ?_⟩
+  · intro G H _ _ e
+    constructor
+    · intro hG
+      obtain ⟨g, hg⟩ := hG.exists_zpow_surjective
+      refine ⟨⟨e g, fun y => ?_⟩⟩
+      obtain ⟨k, hk⟩ := hg (e.symm y)
+      exact ⟨k, by simpa [map_zpow] using congrArg e hk⟩
+    · intro hH
+      obtain ⟨g, hg⟩ := hH.exists_zpow_surjective
+      refine ⟨⟨e.symm g, fun x => ?_⟩⟩
+      obtain ⟨k, hk⟩ := hg (e x)
+      exact ⟨k, by simpa [map_zpow] using congrArg e.symm hk⟩
+  · have := trivialPres_subsingleton
+    exact ⟨trivialPres, ⟨⟨1, fun x => ⟨0, Subsingleton.elim _ _⟩⟩⟩⟩
+  · refine ⟨free2Pres, fun G _ _ ⟨f, hf⟩ hcyc => ?_⟩
+    obtain ⟨g, hg⟩ := hcyc.exists_zpow_surjective
+    have hab : ∀ x y : G, x * y = y * x := fun x y => by
+      obtain ⟨a, rfl⟩ := hg x
+      obtain ⟨b, rfl⟩ := hg y
+      rw [← zpow_add, ← zpow_add, add_comm]
+    apply free2Pres_not_comm
+    apply hf
+    rw [map_mul, map_mul]
+    exact hab _ _
+
+/-- **Corollary 7**: Solvability is undecidable for finitely presented groups. -/
+theorem undecidable_solvable :
+    ¬ ComputablePred (fun F : FinPres => Group.IsSolvable F.Group) := by
+  obtain ⟨S5Pres, ⟨eS5⟩⟩ :=
+    (FinPres.isFinitelyPresented_iff (Equiv.Perm (Fin 5))).1 inferInstance
+  refine adian_rabin (fun G _ => Group.IsSolvable G) ⟨?_, ?_, ?_⟩
+  · intro G H _ _ e
+    exact ⟨fun _ => Group.isSolvable_of_surjective (f := e.toMonoidHom) e.surjective,
+           fun _ => Group.isSolvable_of_surjective (f := e.symm.toMonoidHom) e.symm.surjective⟩
+  · have := trivialPres_subsingleton
+    exact ⟨trivialPres, inferInstance⟩
+  · refine ⟨S5Pres, fun G _ _ ⟨f, hf⟩ hsolv => ?_⟩
+    have : Group.IsSolvable (Equiv.Perm (Fin 5)) :=
+      Group.isSolvable_of_isSolvable_injective (f := f.comp eS5.toMonoidHom) (hf.comp eS5.injective)
+    exact Equiv.Perm.not_isSolvable_fin_5 this
+
+/-- **Corollary 8**: Nilpotency is undecidable for finitely presented groups. -/
+theorem undecidable_nilpotent :
+    ¬ ComputablePred (fun F : FinPres => Group.IsNilpotent F.Group) := by
+  obtain ⟨S5Pres, ⟨eS5⟩⟩ :=
+    (FinPres.isFinitelyPresented_iff (Equiv.Perm (Fin 5))).1 inferInstance
+  refine adian_rabin (fun G _ => Group.IsNilpotent G) ⟨?_, ?_, ?_⟩
+  · intro G H _ _ e
+    exact Group.isNilpotent_congr e
+  · have := trivialPres_subsingleton
+    exact ⟨trivialPres, inferInstance⟩
+  · refine ⟨S5Pres, fun G _ _ ⟨f, hf⟩ hnilp => ?_⟩
+    have : Group.IsSolvable G := Group.IsNilpotent.to_isSolvable
+    have : Group.IsSolvable (Equiv.Perm (Fin 5)) :=
+      Group.isSolvable_of_isSolvable_injective (f := f.comp eS5.toMonoidHom) (hf.comp eS5.injective)
+    exact Equiv.Perm.not_isSolvable_fin_5 this
+
+/-- Decidability of the word problem transfers backward along any injective homomorphism
+between finitely presented groups. -/
+theorem computablePred_wordProblem_of_injective {F₁ F₂ : FinPres}
+    (f : F₁.Group →* F₂.Group) (hf : Function.Injective f)
+    (h₂ : ComputablePred (fun w : List (Fin F₂.numGens × Bool) => F₂.mkWord w = 1)) :
+    ComputablePred (fun w : List (Fin F₁.numGens × Bool) => F₁.mkWord w = 1) := by
+  classical
+  have hsurj : ∀ g : F₂.Group, ∃ u : List (Fin F₂.numGens × Bool), F₂.mkWord u = g := by
+    intro g
+    obtain ⟨x, hx⟩ := QuotientGroup.mk_surjective g
+    exact ⟨x.toWord, by change PresentedGroup.mk F₂.relSet (FreeGroup.mk x.toWord) = g; rw [FreeGroup.mk_toWord]; exact hx⟩
+  let img : Fin F₁.numGens → List (Fin F₂.numGens × Bool) :=
+    fun i => Classical.choose (hsurj (f (F₁.ofGen i)))
+  have himg : ∀ i, F₂.mkWord (img i) = f (F₁.ofGen i) :=
+    fun i => Classical.choose_spec (hsurj (f (F₁.ofGen i)))
+  let letterWord : Fin F₁.numGens × Bool → List (Fin F₂.numGens × Bool) :=
+    fun p => if p.2 then img p.1 else wordInv (img p.1)
+  let subst : List (Fin F₁.numGens × Bool) → List (Fin F₂.numGens × Bool) :=
+    fun w => w.foldr (fun p acc => letterWord p ++ acc) []
+  have hsubst_prim : Primrec subst := by
+    have hlw : Primrec letterWord := Primrec.dom_finite letterWord
+    have hfold := Primrec.list_foldr (α := List (Fin F₁.numGens × Bool))
+      (β := Fin F₁.numGens × Bool) (σ := List (Fin F₂.numGens × Bool))
+      Primrec.id (Primrec.const [])
+      (Primrec.to₂ (Primrec.list_append.comp
+        (hlw.comp (Primrec.fst.comp Primrec.snd)) (Primrec.snd.comp Primrec.snd)))
+    exact hfold.of_eq fun _ => rfl
+  have hsubst_eval : ∀ w : List (Fin F₁.numGens × Bool),
+      F₂.mkWord (subst w) = f (F₁.mkWord w) := by
+    intro w
+    induction w with
+    | nil => simp [subst]
+    | cons p ws ih =>
+      rcases p with ⟨i, s⟩
+      have hcons : F₁.mkWord ((i, s) :: ws) =
+          F₁.mkWord [(i, s)] * F₁.mkWord ws := rfl
+      simp only [subst, List.foldr_cons, FinPres.mkWord_append, hcons, map_mul]
+      rw [ih]
+      congr 1
+      cases s with
+      | true => exact himg i
+      | false =>
+        simp only [letterWord, Bool.false_eq_true, ↓reduceIte, FinPres.mkWord_wordInv, himg i]
+        change (f (F₁.ofGen i))⁻¹ = f (F₁.mkWord (wordOfInv i))
+        rw [FinPres.mkWord_wordOfInv, map_inv]
+  have hiff : ∀ w : List (Fin F₁.numGens × Bool),
+      F₁.mkWord w = 1 ↔ F₂.mkWord (subst w) = 1 := by
+    intro w
+    rw [hsubst_eval w]
+    exact ⟨fun h => by rw [h, map_one], fun h => hf (h.trans (map_one f).symm)⟩
+  exact computablePred_of_reduction hsubst_prim.to_comp hiff h₂
+
+/-- Abstract property of having a decidable word problem (for a finitely presented group). -/
+def HasDecidableWordProblem (G : Type) [Group G] : Prop :=
+  ∃ F : FinPres, Nonempty (G ≃* F.Group) ∧
+    ComputablePred (fun w : List (Fin F.numGens × Bool) => F.mkWord w = 1)
+
+/-- For any finite presentation `F`, `HasDecidableWordProblem F.Group` is equivalent to
+decidability of the word problem in the presentation `F` itself. -/
+theorem hasDecidableWordProblem_iff (F : FinPres) :
+    HasDecidableWordProblem F.Group ↔
+      ComputablePred (fun w : List (Fin F.numGens × Bool) => F.mkWord w = 1) := by
+  constructor
+  · rintro ⟨F', ⟨e⟩, hF'⟩
+    exact computablePred_wordProblem_of_injective e.toMonoidHom e.injective hF'
+  · intro hF
+    exact ⟨F, ⟨MulEquiv.refl _⟩, hF⟩
+
+/-- **Corollary 9**: Deciding whether a finite presentation has a decidable word problem
+is itself undecidable. -/
+theorem undecidable_decidableWordProblem :
+    ¬ ComputablePred (fun F : FinPres =>
+      ComputablePred (fun w : List (Fin F.numGens × Bool) => F.mkWord w = 1)) := by
+  obtain ⟨H, hH⟩ := novikov_boone
+  have hmarkov : IsMarkovProperty HasDecidableWordProblem := by
+    refine ⟨?_, ?_, ?_⟩
+    · intro G₁ G₂ _ _ e
+      exact ⟨fun ⟨F, ⟨e₁⟩, hF⟩ => ⟨F, ⟨e.symm.trans e₁⟩, hF⟩,
+             fun ⟨F, ⟨e₂⟩, hF⟩ => ⟨F, ⟨e.trans e₂⟩, hF⟩⟩
+    · refine ⟨trivialPres, trivialPres, ⟨MulEquiv.refl _⟩, ?_⟩
+      have := trivialPres_subsingleton
+      refine ⟨fun _ => isTrue (Subsingleton.elim _ _), (Primrec.const true).to_comp.of_eq fun _ => ?_⟩
+      rfl
+    · refine ⟨H, fun G _ _ ⟨f, hf⟩ ⟨F, ⟨e⟩, hF⟩ => ?_⟩
+      exact hH (computablePred_wordProblem_of_injective (e.toMonoidHom.comp f) (e.injective.comp hf) hF)
+  have hundec := adian_rabin HasDecidableWordProblem hmarkov
+  intro hcomp
+  exact hundec (hcomp.of_eq fun F => (hasDecidableWordProblem_iff F).symm)
 
 end Adian

@@ -1,0 +1,33 @@
+name: Lean CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leanprover/lean-action@v1
+        with:
+          auto-config: true
+          use-mathlib-cache: true
+
+      - name: Check for sorry and custom axioms
+        run: |
+          if grep -rn "sorry" Adian Adian.lean; then
+            echo "Found sorry!"
+            exit 1
+          fi
+          if grep -rn "^axiom " Adian Adian.lean; then
+            echo "Found custom axiom!"
+            exit 1
+          fi
+
+      - name: Audit axioms of main theorems
+        run: |
+          printf 'import Adian\n#print axioms Adian.novikov_boone\n#print axioms Adian.adian_rabin\n#print axioms Adian.undecidable_trivial\n#print axioms Adian.undecidable_finite\n#print axioms Adian.undecidable_abelian\n#print axioms Adian.undecidable_torsionFree\n#print axioms Adian.undecidable_free\n#print axioms Adian.undecidable_cyclic\n#print axioms Adian.undecidable_solvable\n#print axioms Adian.undecidable_nilpotent\n#print axioms Adian.undecidable_decidableWordProblem\n' | lake env lean --stdin
