@@ -1,13 +1,13 @@
 module
 
-public import Adyan.FinPres
-public import Adyan.NovikovBoone
-public import Adyan.Rabin
+public import Adian.FinPres
+public import Adian.NovikovBoone
+public import Adian.Rabin
 
 /-!
-# The Adyan–Rabin Theorem
+# The Adian–Rabin Theorem
 
-This file proves the **Adyan–Rabin theorem** (Adyan 1955, Rabin 1958): no Markov property of
+This file proves the **Adian–Rabin theorem** (Adian 1955, Rabin 1958): no Markov property of
 finitely presented groups is algorithmically decidable.
 
 ## Main Definitions and Theorems
@@ -17,9 +17,9 @@ finitely presented groups is algorithmically decidable.
 - `IsMarkovProperty`: an abstract property satisfied by some finitely presented group `Π₁.Group`
   and failing for every finitely presented group into which some finitely presented group `Π₂.Group`
   embeds.
-- `adyan_rabin_of_undecidable_word_problem`: reduces the word problem of any finite presentation
+- `adian_rabin_of_undecidable_word_problem`: reduces the word problem of any finite presentation
   `H` to deciding any Markov property `P` on `FinPres`.
-- `adyan_rabin`: the unconditional Adyan–Rabin theorem, instantiating `H` via `novikov_boone`.
+- `adian_rabin`: the unconditional Adian–Rabin theorem, instantiating `H` via `novikov_boone`.
 - Concrete undecidability corollaries:
   - `undecidable_trivial` (triviality)
   - `undecidable_finite` (finiteness)
@@ -32,9 +32,9 @@ finitely presented groups is algorithmically decidable.
 
 open Monoid
 
-namespace Adyan
+namespace Adian
 
-/-! ### Part 1: Markov Properties and the Adyan–Rabin Theorem -/
+/-! ### Part 1: Markov Properties and the Adian–Rabin Theorem -/
 
 /-- A property of groups (living in `Type`). -/
 abbrev GroupProp : Type 1 := ∀ (G : Type) [Group G], Prop
@@ -70,9 +70,9 @@ private noncomputable def coprodSubsingletonLeftEquiv (A B : Type*) [Group A] [G
   · apply MonoidHom.ext; intro b
     simp [toFun, invFun]
 
-/-- Conditional Adyan–Rabin reduction: if `H` is a finite presentation with undecidable word
+/-- Conditional Adian–Rabin reduction: if `H` is a finite presentation with undecidable word
 problem, then no Markov property is decidable on `FinPres`. -/
-theorem adyan_rabin_of_undecidable_word_problem (H : FinPres)
+theorem adian_rabin_of_undecidable_word_problem (H : FinPres)
     (hH : ¬ ComputablePred (fun w : List (Fin H.numGens × Bool) => H.mkWord w = 1))
     (P : GroupProp) (hP : IsMarkovProperty P) :
     ¬ ComputablePred (fun F : FinPres => P F.Group) := by
@@ -136,11 +136,11 @@ theorem adyan_rabin_of_undecidable_word_problem (H : FinPres)
       exact hF₂ (Ψ w).Group (FinPres.isFinitelyPresented (Ψ w)) ⟨f₃.comp (f₂.comp f₁), hf_inj⟩ hPΨ
   exact not_computablePred_of_reduction hΨ_prim.to_comp hiff hH
 
-/-- **The Adyan–Rabin Theorem**: No Markov property of finitely presented groups is decidable. -/
-theorem adyan_rabin (P : GroupProp) (hP : IsMarkovProperty P) :
+/-- **The Adian–Rabin Theorem**: No Markov property of finitely presented groups is decidable. -/
+theorem adian_rabin (P : GroupProp) (hP : IsMarkovProperty P) :
     ¬ ComputablePred (fun F : FinPres => P F.Group) := by
   obtain ⟨H, hH⟩ := novikov_boone
-  exact adyan_rabin_of_undecidable_word_problem H hH P hP
+  exact adian_rabin_of_undecidable_word_problem H hH P hP
 
 /-! ### Part 2: Standard Witness Presentations and Concrete Corollaries -/
 
@@ -294,7 +294,7 @@ theorem freeGroup_eq_one_of_sq_eq_one {ι : Type*} (w : FreeGroup ι) (hw : w ^ 
 /-- **Corollary 1**: Triviality of finitely presented groups is undecidable. -/
 theorem undecidable_trivial :
     ¬ ComputablePred (fun F : FinPres => Subsingleton F.Group) := by
-  refine adyan_rabin (fun G _ => Subsingleton G) ⟨?_, ?_, ?_⟩
+  refine adian_rabin (fun G _ => Subsingleton G) ⟨?_, ?_, ?_⟩
   · intro G H _ _ e
     exact ⟨fun _ => e.symm.injective.subsingleton, fun _ => e.injective.subsingleton⟩
   · exact ⟨trivialPres, trivialPres_subsingleton⟩
@@ -307,7 +307,7 @@ theorem undecidable_trivial :
 /-- **Corollary 2**: Finiteness of finitely presented groups is undecidable. -/
 theorem undecidable_finite :
     ¬ ComputablePred (fun F : FinPres => Finite F.Group) := by
-  refine adyan_rabin (fun G _ => Finite G) ⟨?_, ?_, ?_⟩
+  refine adian_rabin (fun G _ => Finite G) ⟨?_, ?_, ?_⟩
   · intro G H _ _ e
     exact ⟨fun _ => Finite.of_equiv G e.toEquiv, fun _ => Finite.of_equiv H e.symm.toEquiv⟩
   · have := trivialPres_subsingleton
@@ -321,7 +321,7 @@ theorem undecidable_finite :
 /-- **Corollary 3**: Abelianness (commutativity) of finitely presented groups is undecidable. -/
 theorem undecidable_abelian :
     ¬ ComputablePred (fun F : FinPres => ∀ x y : F.Group, x * y = y * x) := by
-  refine adyan_rabin (fun G _ => ∀ x y : G, x * y = y * x) ⟨?_, ?_, ?_⟩
+  refine adian_rabin (fun G _ => ∀ x y : G, x * y = y * x) ⟨?_, ?_, ?_⟩
   · intro G H _ _ e
     constructor
     · intro hG x y
@@ -341,7 +341,7 @@ theorem undecidable_abelian :
 /-- **Corollary 4**: Torsion-freeness of finitely presented groups is undecidable. -/
 theorem undecidable_torsionFree :
     ¬ ComputablePred (fun F : FinPres => ∀ g : F.Group, g ≠ 1 → ∀ n : ℕ, 0 < n → g ^ n ≠ 1) := by
-  refine adyan_rabin (fun G _ => ∀ g : G, g ≠ 1 → ∀ n : ℕ, 0 < n → g ^ n ≠ 1) ⟨?_, ?_, ?_⟩
+  refine adian_rabin (fun G _ => ∀ g : G, g ≠ 1 → ∀ n : ℕ, 0 < n → g ^ n ≠ 1) ⟨?_, ?_, ?_⟩
   · intro G H _ _ e
     constructor
     · intro hG g hg n hn hgn
@@ -361,7 +361,7 @@ theorem undecidable_torsionFree :
 /-- **Corollary 5**: Being a free group is undecidable for finitely presented groups. -/
 theorem undecidable_free :
     ¬ ComputablePred (fun F : FinPres => ∃ ι : Type, Nonempty (F.Group ≃* FreeGroup ι)) := by
-  refine adyan_rabin (fun G _ => ∃ ι : Type, Nonempty (G ≃* FreeGroup ι)) ⟨?_, ?_, ?_⟩
+  refine adian_rabin (fun G _ => ∃ ι : Type, Nonempty (G ≃* FreeGroup ι)) ⟨?_, ?_, ?_⟩
   · intro G H _ _ e
     exact ⟨fun ⟨ι, ⟨eG⟩⟩ => ⟨ι, ⟨e.symm.trans eG⟩⟩, fun ⟨ι, ⟨eH⟩⟩ => ⟨ι, ⟨e.trans eH⟩⟩⟩
   · have := trivialPres_subsingleton
@@ -386,4 +386,4 @@ theorem undecidable_free :
     have h2 : f (zmod2Pres.ofGen (0 : Fin 1)) = 1 := e.injective (h1.trans (map_one e).symm)
     exact zmod2Pres_gen_ne_one (hf (h2.trans (map_one f).symm))
 
-end Adyan
+end Adian

@@ -1,7 +1,7 @@
 module
 
-public import Adyan.FinPres
-public import Adyan.TMHalting
+public import Adian.FinPres
+public import Adian.TMHalting
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Computability.Primrec.List
 public import Mathlib.Tactic.Linarith
@@ -32,7 +32,7 @@ Main results:
 
 open Turing Relation
 
-namespace Adyan
+namespace Adian
 
 /-! ### Part 1: Deterministic Modular Machines on `ℤ × ℤ` -/
 
@@ -881,4 +881,4 @@ theorem exists_undecidable_modularMachine :
 
 end TM0ToModular
 
-end Adyan
+end Adian

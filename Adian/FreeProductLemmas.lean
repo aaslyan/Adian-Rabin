@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Ring
 # Free Product, Free Group, Affine Group, and HNN Subgroups Lemmas
 
 This file collects the combinatorial group theory lemmas shared between the Novikov–Boone
-construction (`Adyan/NovikovBoone.lean`) and Rabin's embedding lemma (`Adyan/Rabin.lean`):
+construction (`Adian/NovikovBoone.lean`) and Rabin's embedding lemma (`Adian/Rabin.lean`):
 
 1. `coprodEquivCoprodI`: Equivalence `G ∗ H ≃* CoprodI (TwoFam G H)` giving unique reduced
    normal forms (`CoprodI.Word`) for binary free products, and injectivity of `Coprod.map`.
@@ -36,7 +36,7 @@ construction (`Adyan/NovikovBoone.lean`) and Rabin's embedding lemma (`Adyan/Rab
 
 open Monoid Subgroup
 
-namespace Adyan
+namespace Adian
 
 /-! ### Part 1: Equivalence `Monoid.Coprod G H ≃* Monoid.CoprodI (TwoFam G H)` -/
 
@@ -1780,4 +1780,4 @@ theorem hnn_free_pair_injective {G : Type*} [Group G] {A B : Subgroup G} (φ : A
 
 end HNNFreePair
 
-end Adyan
+end Adian

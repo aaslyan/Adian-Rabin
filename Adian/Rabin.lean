@@ -1,8 +1,8 @@
 module
 
-public import Adyan.FinPres
-public import Adyan.MultiHNN
-public import Adyan.FreeProductLemmas
+public import Adian.FinPres
+public import Adian.MultiHNN
+public import Adian.FreeProductLemmas
 
 /-!
 # Rabin's Collapse-and-Embedding Construction
@@ -29,7 +29,7 @@ single HNN extension of `AffQ`).
 
 open Monoid Subgroup
 
-namespace Adyan
+namespace Adian
 
 /-! ### Part 1: Presentation `rabinPres K w` and Canonical Inclusion `rabinIncl K w` -/
 
@@ -683,4 +683,4 @@ theorem rabinIncl_injective_of_ne_one (K : FinPres) (w : List (Fin K.numGens × 
 
 end RabinEmbed
 
-end Adyan
+end Adian

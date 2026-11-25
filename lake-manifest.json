@@ -91,6 +91,6 @@
    "inputRev": "v4.36.0",
    "inherited": true,
    "configFile": "lakefile.toml"}],
- "name": "adyan",
+ "name": "adian",
  "lakeDir": ".lake",
  "fixedToolchain": false}

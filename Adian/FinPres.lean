@@ -17,7 +17,7 @@ stated directly over finite presentations.
 
 @[expose] public section
 
-namespace Adyan
+namespace Adian
 
 section Words
 
@@ -574,4 +574,4 @@ theorem not_computablePred_of_reduction {α β : Type*} [Primcodable α] [Primco
     ¬ ComputablePred q :=
   fun hq => hp (computablePred_of_reduction hf hiff hq)
 
-end Adyan
+end Adian

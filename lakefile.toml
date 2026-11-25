@@ -1,7 +1,7 @@
-name = "adyan"
+name = "adian"
 version = "0.1.0"
 keywords = ["math"]
-defaultTargets = ["Adyan"]
+defaultTargets = ["Adian"]
 
 [leanOptions]
 pp.unicode.fun = true
@@ -13,4 +13,4 @@ scope = "leanprover-community"
 rev = "v4.36.0"
 
 [[lean_lib]]
-name = "Adyan"
+name = "Adian"

@@ -1,14 +1,14 @@
 module
 
-public import Adyan.FinPres
-public import Adyan.MultiHNN
-public import Adyan.FreeProductLemmas
-public import Adyan.ModularMachine
+public import Adian.FinPres
+public import Adian.MultiHNN
+public import Adian.FreeProductLemmas
+public import Adian.ModularMachine
 
 /-!
 # The Novikov–Boone Theorem via the Aanderaa–Cohen Modular Machine Group
 
-Given a deterministic modular machine `M` (from `Adyan/ModularMachine.lean`), we build the
+Given a deterministic modular machine `M` (from `Adian/ModularMachine.lean`), we build the
 Aanderaa–Cohen finitely presented group `modPres M` as a 2-layer HNN extension over
 `ModBase = (ℤ × ℤ) ∗ ℤ`:
 
@@ -31,7 +31,7 @@ theorem**: there exists a finite presentation `P : FinPres` with undecidable wor
 
 open Monoid Subgroup
 
-namespace Adyan
+namespace Adian
 
 noncomputable section
 
@@ -1095,4 +1095,4 @@ theorem novikov_boone :
 
 end
 
-end Adyan
+end Adian

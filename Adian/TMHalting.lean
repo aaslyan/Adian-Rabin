@@ -1,6 +1,6 @@
 module
 
-public import Adyan.FinPres
+public import Adian.FinPres
 public import Mathlib.Computability.Halting
 public import Mathlib.Computability.PartrecBasis
 public import Mathlib.Computability.Primrec.List
@@ -27,7 +27,7 @@ whose blank-tape halting predicate is undecidable.
 
 open Turing StateTransition Relation
 
-namespace Adyan
+namespace Adian
 
 section PrimrecHelpers
 
@@ -704,4 +704,4 @@ theorem exists_undecidable_blank_tm0 :
 
 end UniversalTM
 
-end Adyan
+end Adian

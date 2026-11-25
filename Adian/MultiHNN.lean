@@ -24,7 +24,7 @@ This file builds two key combinatorial group theory tools directly on top of Mat
 
 open Monoid Subgroup
 
-namespace Adyan
+namespace Adian
 
 noncomputable section
 
@@ -616,4 +616,4 @@ end MultiHNNDef
 
 end
 
-end Adyan
+end Adian
